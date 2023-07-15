@@ -16,8 +16,17 @@ class Transfer extends CI_Controller {
   }
 
   public function index() {
-    $label_transfers = $this->db->get('label_transfer')->result_array();
-    $data_konten['label_transfers'] = $label_transfers;
+    $transfers = $this->db->select('transfer.*, wakil_keluarga, no_rumah, 
+    nama_blok, sub_blok, label_transfer')
+      ->from('transfer')
+      ->join('keluarga', 'keluarga.id_keluarga = transfer.id_keluarga')
+      ->join('label_transfer', 'label_transfer.id_label_transfer = transfer.id_label_transfer')
+      ->join('detail_blok', 'detail_blok.id_detail_blok = keluarga.id_detail_blok')
+      ->join('blok', 'blok.id_blok = detail_blok.id_blok')
+      ->get()
+      ->result_array();
+    
+    $data_konten['transfers'] = $transfers;
     $data['konten'] = $this->load->view('transfer/index.php', $data_konten, TRUE);
 
     $data['menus'] = $this->config->item('menus');
