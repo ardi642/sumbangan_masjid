@@ -92,7 +92,7 @@
     </table>
   </div>
   <?php if ($tanggal_dari == '' and $tanggal_sampai == '') : ?>
-    <div>Total Nominal Keseluruhan : <?= $total_nominal ?></div>
+    <div>Total Nominal Keseluruhan : Rp. <?= $total_nominal ?></div>
     <?php else : ?>
     <div>
       <div>Rentang Waktu : </div>
