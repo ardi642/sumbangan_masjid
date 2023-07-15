@@ -2,10 +2,57 @@
   <h5 class="text-center mb-5">Tabel Data Transfer</h5>
   <div class="text-center mb-5">
     <a class="btn btn-success" 
-    href="<?= base_url("transfer/tambah") ?>" role="button">
+    href="<?= base_url('transfer/tambah') ?>" role="button">
     Tambah Data Transfer
     </a>
   </div>
+  <form action="" method="post" class=" mb-3" x-data>
+    <input type="hidden" name="label_transfer" x-model="$store.pencarian.label_transfer" id="label-transfer">
+    <h5 class="text">Pencarian : </h5>
+    <div class="row g-3 align-items-center">
+      <div class="col-6">
+        <div class="row g-3 align-items-center">
+          <div class="col-auto">mulai dari tanggal</div>
+          <div class="col-auto">
+            <input type="date" class="form-control" name="tanggal_dari" x-model="$store.pencarian.tanggal_dari">
+          </div>
+          <div class="col-auto">Sampai</div>
+          <div class="col-auto">
+          <input type="date" class="form-control" name="tanggal_sampai" x-model="$store.pencarian.tanggal_sampai">
+          </div>
+        </div>
+      </div>
+      <div class="col-6">
+        <div class="row g-3 align-items-center">
+          <div class="col-6">
+            <div class="mb-3">
+              <label class="form-label">jenis transfer</label>
+              <select name="jenis_transfer" class="form-control" id="jenis-transfer" x-model="$store.pencarian.jenis_transfer">
+                <option value=""></option>
+                <option value="sumbangan">sumbangan</option>
+                <option value="pengeluaran">pengeluaran</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="mb-3">
+              <label class="form-label">label transfer</label>
+              <select class="form-control" name="id_label_transfer" 
+              id="id-label-transfer">
+              <?php if ($id_label_transfer != "") : ?>
+                <option value="<?= $id_label_transfer ?>"><?= $label_transfer ?></option>
+              <?php endif ?>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="d-flex justify-content-end">
+      <a class="btn btn-primary me-2" href="">reset pencarian</a>
+      <button class="btn btn-primary">lakukan pencarian</button>
+    </div>
+  </form>
   <div class="table-responsive">
     <table class="table" id="tabel">
       <thead>
@@ -44,8 +91,32 @@
       </tbody>
     </table>
   </div>
+  <?php if ($tanggal_dari == '' and $tanggal_sampai == '') : ?>
+    <div>Total Nominal Keseluruhan : <?= $total_nominal ?></div>
+    <?php else : ?>
+    <div>
+      <div>Rentang Waktu : </div>
+      <div>mulai dari tanggal : <?= $tanggal_dari != '' ? $tanggal_dari : '(tidak ditentukan)' ?>
+      sampai tanggal : <?= $tanggal_sampai != '' ? $tanggal_sampai : '(tidak ditentukan)' ?>
+      </div>
+      <div>Total Nominal : Rp. <?= $total_nominal ?></div>
+    </div>
+    <?php endif ?>
 </div>
 <script>
+
+  document.addEventListener('alpine:init', () => {
+    
+    Alpine.store('pencarian', {
+			tanggal_dari: "<?= $tanggal_dari ?>",
+      tanggal_sampai: "<?= $tanggal_sampai ?>",
+			jenis_transfer: "<?= $jenis_transfer ?>",
+			id_label_transfer: "<?= $id_label_transfer ?>",
+      label_transfer: "<?= $label_transfer ?>",
+    })
+
+    $("#jenis-transfer").val("<?= $jenis_transfer ?>").trigger('change');
+	})
 
   const Toast = Swal.mixin({
     toast: true,
@@ -95,6 +166,58 @@
       }
     ]
   });
+
+  $("#jenis-transfer").select2({
+    placeholder: "pilih jenis transfer",
+    allowClear: true
+  })
+
+  $("#id-label-transfer").select2({
+	placeholder: "pilih label transfer",
+	allowClear: true,
+	ajax: {
+		url: `<?= base_url() ?>api/get_label_transfer`,
+		delay: 250,
+		dataType: "json",
+		processResults: function (data) {
+			// Transforms the top-level key of the response object from 'items' to 'results'
+			const newData = data.map(function (item, index) {
+				return {
+					id: item.id_label_transfer,
+					text: item.label_transfer,
+					...item,
+				};
+			});
+			return {
+				results: newData,
+			};
+		},
+	},
+  });
+
+  $("#jenis-transfer").change(function() {
+    const storePencarian = Alpine.store('pencarian');
+    const data = $('#jenis-transfer').select2('data')[0] || null;
+    if (data == null) {
+      storePencarian.jenis_transfer = ''
+    }
+    else {
+      storePencarian.jenis_transfer = data.id
+    }
+  })
+
+  $("#id-label-transfer").change(function() {
+    const storePencarian = Alpine.store('pencarian');
+    const data = $('#id-label-transfer').select2('data')[0] || null;
+    if (data == null) {
+      storePencarian.label_transfer = ''
+      storePencarian.id_label_transfer = ''
+    }
+    else {
+      storePencarian.label_transfer = data.text
+      storePencarian.id_label_transfer = data.id
+    }
+  })
 
   $(document).on('click', '.btn-hapus', async function(event) {
     event.preventDefault();

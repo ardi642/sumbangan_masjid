@@ -298,8 +298,6 @@ if (data != null) {
 	data.id_keluarga = '<?= $data_transfer['id_keluarga']?>';
 }
 
-$()
-
 $("#id-blok").change(function () {
   $('#id-detail-blok').val(null).trigger('change');
   $("#id-keluarga").val(null).trigger('change');

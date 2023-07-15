@@ -16,17 +16,57 @@ class Transfer extends CI_Controller {
   }
 
   public function index() {
-    $transfers = $this->db->select('transfer.*, wakil_keluarga, no_rumah, 
+    $tanggal_dari = $this->input->post('tanggal_dari') ?? '';
+    $tanggal_sampai = $this->input->post('tanggal_sampai') ?? '';
+    $jenis_transfer = $this->input->post('jenis_transfer') ?? '';
+    $id_label_transfer = $this->input->post('id_label_transfer') ?? '';
+    $label_transfer = $this->input->post('label_transfer') ?? '';
+
+    $query = $this->db->select('transfer.*, wakil_keluarga, no_rumah, 
     nama_blok, sub_blok, label_transfer')
       ->from('transfer')
       ->join('keluarga', 'keluarga.id_keluarga = transfer.id_keluarga')
       ->join('label_transfer', 'label_transfer.id_label_transfer = transfer.id_label_transfer')
       ->join('detail_blok', 'detail_blok.id_detail_blok = keluarga.id_detail_blok')
-      ->join('blok', 'blok.id_blok = detail_blok.id_blok')
-      ->get()
-      ->result_array();
+      ->join('blok', 'blok.id_blok = detail_blok.id_blok');
+
+      if ($tanggal_dari != '')
+        $query->where('Date(waktu) >=', $tanggal_dari);
+      
+      if ($tanggal_sampai != '')
+        $query->where('Date(waktu) <=', $tanggal_sampai);
+
+      if ($jenis_transfer != '')
+        $query->where('jenis_transfer', $jenis_transfer);
+      
+      if ($id_label_transfer != '')
+        $query->where('transfer.id_label_transfer', $id_label_transfer);
+
+      $transfers = $query->get()->result_array();
+
+    $query_total_nominal = $this->db->select_sum('nominal');
+    if ($tanggal_dari != '')
+        $query_total_nominal->where('Date(waktu) >=', $tanggal_dari);
+      
+    if ($tanggal_sampai != '')
+      $query_total_nominal->where('Date(waktu) <=', $tanggal_sampai);
+
+    if ($jenis_transfer != '')
+      $query_total_nominal->where('jenis_transfer', $jenis_transfer);
+    
+    if ($id_label_transfer != '')
+      $query_total_nominal->where('transfer.id_label_transfer', $id_label_transfer);
+    
+    $total_nominal = $query_total_nominal->get('transfer')->row_array()['nominal'];
     
     $data_konten['transfers'] = $transfers;
+    $data_konten['tanggal_dari'] = $tanggal_dari;
+    $data_konten['tanggal_sampai'] = $tanggal_sampai;
+    $data_konten['jenis_transfer'] = $jenis_transfer;
+    $data_konten['id_label_transfer'] = $id_label_transfer;
+    $data_konten['label_transfer'] = $label_transfer;
+    $data_konten['total_nominal'] = $total_nominal;
+    
     $data['konten'] = $this->load->view('transfer/index.php', $data_konten, TRUE);
 
     $data['menus'] = $this->config->item('menus');
@@ -111,7 +151,7 @@ class Transfer extends CI_Controller {
     $query = $this->db
       ->where('id_transfer', $id_transfer)
       ->update('transfer', $data_transfer);
-    $data['pesan'] = 'data label transfer berhasil diubah';
+    $data['pesan'] = 'data transfer berhasil diubah';
     echo json_encode($data);
   }
 
