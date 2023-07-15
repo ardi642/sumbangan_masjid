@@ -104,6 +104,10 @@ class Transfer extends CI_Controller {
       return;
     }
 
+    if ($data_transfer['jenis_transfer'] == 'pengeluaran') {
+      $data_transfer['nominal'] = $data_transfer['nominal'] * -1;
+    }
+
     $query = $this->db
       ->where('id_transfer', $id_transfer)
       ->update('transfer', $data_transfer);
@@ -111,23 +115,13 @@ class Transfer extends CI_Controller {
     echo json_encode($data);
   }
 
-  public function hapus($id_label_transfer) {
-    $this->db->db_debug = FALSE;
+  public function hapus($id_transfer) {
     $query = $this->db
-      ->where('id_label_transfer', $id_label_transfer)
-      ->delete('label_transfer');
-
-    $error_code = $this->db->error()['code'];
-    if ($error_code == 1451) {  
-      $this->session->set_flashdata('status', 'gagal');
-      $this->session->set_flashdata('pesan', "masih terdapat transfer pada label transfer tersebut");
-      redirect($_SERVER['HTTP_REFERER']);
-      die();
-    }
-    $this->db->db_debug = TRUE;
+      ->where('id_transfer', $id_transfer)
+      ->delete('transfer');
 
     $this->session->set_flashdata('status', 'sukses');
-    $this->session->set_flashdata('pesan', "data label transfer dengan id $id_label_transfer berhasil dihapus");
+    $this->session->set_flashdata('pesan', "data transfer dengan id transfer $id_transfer berhasil dihapus");
     
     redirect($_SERVER['HTTP_REFERER']);
   }

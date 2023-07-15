@@ -118,6 +118,9 @@
       no_rumah: '<?= $data_transfer['no_rumah']?>',
       id_keluarga: '<?= $data_transfer['id_keluarga']?>'
     })
+
+		if (Alpine.store('input').jenis_transfer == 'pengeluaran')
+			Alpine.store('input').nominal *= -1;
 	})
 
 async function handleEdit(event) {
