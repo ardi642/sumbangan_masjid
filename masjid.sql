@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 15, 2023 at 12:28 PM
+-- Generation Time: Jul 16, 2023 at 07:45 AM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 8.2.0
 
@@ -133,7 +133,6 @@ CREATE TABLE `label_transfer` (
 --
 
 INSERT INTO `label_transfer` (`id_label_transfer`, `label_transfer`) VALUES
-(1, 'jumat berkah'),
 (2, 'yatim piatu'),
 (3, 'adasd'),
 (4, 'adasd'),
@@ -162,9 +161,8 @@ CREATE TABLE `transfer` (
 --
 
 INSERT INTO `transfer` (`id_transfer`, `id_keluarga`, `jenis_transfer`, `id_label_transfer`, `nominal`, `waktu`, `keterangan_transfer`) VALUES
-(9, 95, 'pengeluaran', 2, -20000, '2023-07-15 09:19:15', 'tes tes'),
-(10, 95, 'pengeluaran', 2, -20000, '2023-07-15 14:20:53', '2222'),
-(11, 93, 'pengeluaran', 2, -10000, '2023-07-15 14:21:47', '');
+(14, 93, 'pengeluaran', 2, -30000, '2023-07-10 21:17:56', 'test test'),
+(15, 94, 'sumbangan', 10, 50000, '2023-07-15 22:54:15', '');
 
 --
 -- Indexes for dumped tables
@@ -243,7 +241,7 @@ ALTER TABLE `label_transfer`
 -- AUTO_INCREMENT for table `transfer`
 --
 ALTER TABLE `transfer`
-  MODIFY `id_transfer` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id_transfer` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- Constraints for dumped tables
